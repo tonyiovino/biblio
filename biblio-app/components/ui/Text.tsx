@@ -2,11 +2,11 @@
 import { VariantProps, cva } from 'class-variance-authority';
 import { cssInterop } from 'nativewind';
 import * as React from 'react';
-import { UITextView } from 'react-native-uitextview';
+import { Platform, Text as RNText } from 'react-native';
 import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
 
-cssInterop(UITextView, { className: 'style' });
+cssInterop(RNText, { className: 'style' });
 
 const textVariants = cva('text-foreground', {
   variants: {
@@ -43,7 +43,7 @@ function Text({
   weight,
   color,
   ...props
-}: React.ComponentPropsWithoutRef<typeof UITextView> & VariantProps<typeof textVariants>) {
+}: React.ComponentPropsWithoutRef<typeof RNText> & VariantProps<typeof textVariants>) {
   const textClassName = React.useContext(TextClassContext);
 
   // const [fontsLoaded] = useFonts({
@@ -59,9 +59,10 @@ function Text({
   //   medium: 'Inter_500Medium',
   //   bold: 'Inter_700Bold',
   // } as const;
+  // Renderizza UITextView su mobile, RNText su web
 
   return (
-    <UITextView
+    <RNText
       // style={{ fontFamily: fontMap[weight ?? 'medium'] }}
       className={cn(textVariants({ variant, weight, color }), textClassName, className)}
       {...props}

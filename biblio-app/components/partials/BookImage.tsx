@@ -38,9 +38,23 @@ const BookImage = ({
       style={style}
       source={imageSource}
       onLoad={(e) => {
-        const { width, height } = e.nativeEvent.source;
-        if (width === 1 && height === 1) setImageError(true);
-        if (props.onLoad) props.onLoad(e);
+        const { source } = e.nativeEvent;
+
+        // Controlla che 'source' sia definito prima di accedere a 'width' e 'height'
+        if (source) {
+          const { width, height } = source;
+
+          if (width === 1 && height === 1) {
+            setImageError(true); // Imposta l'errore se le dimensioni sono 1x1
+          }
+        } else {
+          // Puoi gestire il caso in cui source sia undefined
+          console.warn('Image source is undefined');
+        }
+
+        if (props.onLoad) {
+          props.onLoad(e);
+        }
       }}
       onError={() => setImageError(true)}
     />

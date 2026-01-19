@@ -2,8 +2,9 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 /*@ts-expect-error inizio errore*/
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { initializeAuth, getReactNativePersistence, getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';  // Importa Platform per la verifica della piattaforma
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_API_KEY,
@@ -19,7 +20,7 @@ let app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore();
 
 export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+  persistence: Platform.OS === 'web' ? browserLocalPersistence : getReactNativePersistence(ReactNativeAsyncStorage),
 });
 
 export const storage = getStorage(app);
