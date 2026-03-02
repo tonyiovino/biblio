@@ -53,58 +53,54 @@ const BookCard = memo(({ item, selected, onPress }: BookCardProps) => {
 
   const { membership } = useUserStore();
 
-  return (
-    <View className={'rounded-2xl bg-card p-4'}>
-      <View className="justify-center gap-6 rounded-lg">
-        {/* Immagine e Valutazione */}
-        <View className="gap-4">
-          <BookImage
-            isbn={item.isbn}
-            withBackground
-            resizeMode="contain"
-            className="h-32 rounded-2xl"
-          />
-          <View className="flex-row items-center gap-1">
-            <Icon name="star" size={'body'} color="#ca8a04" />
-            <Text variant="label">4,6</Text>
-            {/*TODO: fix colors tailwind css 'muted'*/}
-            <Text variant="label" color={'muted'}>
-              {'(+150 reviews)'}
-            </Text>
-          </View>
-        </View>
+  console.log(item);
 
-        {/* Titolo e Autore */}
-        <View className="gap-2">
-          <Text>{item.title}</Text>
+  return (
+    <View className="gap-4 rounded-2xl bg-card p-4">
+      {/* Immagine e Valutazione */}
+      <View className="gap-4">
+        <BookImage
+          isbn={item.isbn}
+          withBackground
+          resizeMode="contain"
+          className="h-32 rounded-2xl"
+        />
+        {/* <View className="flex-row items-center gap-1">
+          <Icon name="star" size={'body'} color="#ca8a04" />
+          <Text variant="label">4,6</Text>
           <Text variant="label" color={'muted'}>
-            di {item.author}
+            {'(+150 reviews)'}
+          </Text>
+        </View> */}
+      </View>
+
+      {/* Titolo e Autore */}
+      <View className="gap-2">
+        <Text>{item.title}</Text>
+        <Text variant="label" color={'muted'}>
+          di {item.author}
+        </Text>
+      </View>
+
+      {/* Disponibilità e CTA*/}
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center gap-2">
+          <Icon size={'label'} name="circle" color={item.available ? '#4ade80' : '#BC2F2F'}></Icon>
+          <Text
+            variant={'label'}
+            weight={'light'}
+            style={{ includeFontPadding: false }}
+            className="flex-shrink uppercase">
+            {item.available ? t('card.available') : t('card.notavailable')}
           </Text>
         </View>
 
-        {/* Disponibilità e CTA*/}
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center gap-2">
-            <Icon
-              size={'label'}
-              name="circle"
-              color={item.available ? '#4ade80' : '#BC2F2F'}></Icon>
-            <Text
-              variant={'label'}
-              weight={'light'}
-              style={{ includeFontPadding: false }}
-              className="flex-shrink uppercase">
-              {item.available ? t('card.available') : t('card.notavailable')}
-            </Text>
-          </View>
-
-          {/* Call To Actions */}
-          {membership.role === 'staff' ? (
-            <StaffCTA onPress={onPress} />
-          ) : (
-            <UserCTA onPress={onPress} selected={selected} />
-          )}
-        </View>
+        {/* Call To Actions */}
+        {membership.role === 'staff' ? (
+          <StaffCTA onPress={onPress} />
+        ) : (
+          <UserCTA onPress={onPress} selected={selected} />
+        )}
       </View>
     </View>
   );
