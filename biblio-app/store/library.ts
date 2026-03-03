@@ -1,11 +1,7 @@
 import { create } from 'zustand';
-import { db } from '~/lib/firebase';
-import { collection, doc, getDoc, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 import { Book } from './biblio';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Alert } from 'react-native';
-import { useTranslation } from 'react-i18next';
 
 export interface TLibraryState {
   library: Book[];
@@ -56,22 +52,8 @@ const libraryMutations = {
 const libraryAction = {
   clearLibrary: () => {
     const { setLibrary } = useLibraryStore.getState();
-    const { t } = useTranslation();
 
-    Alert.alert('Attenzione!', 'Vuoi eliminare tutta la libreria?', [
-      {
-        text: t('index.cancel'),
-        style: 'cancel',
-        isPreferred: true,
-      },
-      {
-        text: 'Sì',
-        style: 'destructive',
-        onPress: () => {
-          setLibrary([]);
-        },
-      },
-    ]);
+    setLibrary([]);
   },
 } satisfies TLibraryAction;
 
