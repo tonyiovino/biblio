@@ -1,17 +1,15 @@
-import { Pressable, StyleSheet, View } from 'react-native';
-import { Icon, Text } from '~/components/ui';
+import { StyleSheet, View } from 'react-native';
+import { Text } from '~/components/ui';
 import { BlurView } from 'expo-blur';
 import { PressableScale } from 'pressto';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { useTranslation } from 'react-i18next';
-
-import { haptic } from '~/lib/haptics';
 import { useAuthStore, useSettingsStore } from '~/store';
 import { Toggle } from '~/components/nativewindui/Toggle';
 
 const Settings = () => {
   const { t } = useTranslation();
-  const { uid, logout } = useAuthStore();
+  const { logout } = useAuthStore();
   const { colors, isDarkColorScheme, toggleColorScheme } = useColorScheme();
   const { hapticsEnabled, toggleHaptics } = useSettingsStore();
 

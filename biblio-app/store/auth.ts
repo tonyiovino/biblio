@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { auth, db } from '~/lib/firebase';
+import { auth } from '~/lib/firebase';
 import { Membership, User, useUserStore } from './user';
-import { collection, doc, getDoc, query, Timestamp, updateDoc, where } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 import { signInAnonymously, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { Alert } from 'react-native';
 
