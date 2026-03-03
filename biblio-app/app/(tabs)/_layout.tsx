@@ -1,12 +1,11 @@
-import { View } from 'react-native';
-import { Tabs, Href, useNavigation, router } from 'expo-router';
+import { Alert, View } from 'react-native';
+import { Tabs, Href, router } from 'expo-router';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { Icon } from '~/components/ui';
 import { TabBarIcon } from '~/components/partials';
 import { Button } from '~/components/nativewindui/Button';
 import { useFiltersStore, useLibraryStore, useUserStore } from '~/store';
-import { DrawerActions } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '~/components/ui/Badge';
 
@@ -36,6 +35,7 @@ const HeaderRight = () => {
 
 const HeaderBin = () => {
   const { library, clearLibrary } = useLibraryStore();
+  const { t } = useTranslation();
 
   const isEmpty = library.length <= 0;
 
@@ -45,7 +45,12 @@ const HeaderBin = () => {
       className="mr-6"
       size={'icon'}
       disabled={isEmpty}
-      onPress={clearLibrary}>
+      onPress={() =>
+        Alert.alert('Attenzione!', 'Vuoi eliminare tutta la libreria?', [
+          { text: t('index.cancel'), style: 'cancel' },
+          { text: 'Sì', style: 'destructive', onPress: clearLibrary },
+        ])
+      }>
       <Icon
         type="MaterialCommunityIcons"
         name={isEmpty ? 'delete-empty-outline' : 'delete-outline'}
