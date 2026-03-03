@@ -43,7 +43,8 @@
     },
     "top_tabs": {
         "shoppingcart": "Carrello",
-        "borrow": "Richieste"
+        "borrow": "Richieste",
+        "tobereturned": "Da restituire"
     },
     "library": {
         "title_null": "Libreria vuota",
@@ -54,6 +55,10 @@
     "borrow": {
         "title_null": "Nessuna richiesta",
         "title_null_sub": "Aggiungi i libri dalla lista e richiedi un prestito!"
+    },
+    "tobereturned": {
+        "title_null": "Nessun libro da restituire",
+        "title_null_sub": "Attenzione! Se hai effettuato il logout potresti non vedere i libri da restituire. Chiedi al bibliotecario"
     },
     "settings": {
         "title": "Impostazioni",

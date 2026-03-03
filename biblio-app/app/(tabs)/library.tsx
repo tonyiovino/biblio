@@ -79,9 +79,11 @@ const Library = () => {
 
   const { library, removeFromLibrary, setNotify } = useLibraryStore();
   const { requests, requestLoan, isLoading } = useBiblioStore();
+  const { loans } = useBiblioStore();
 
   const shoppingCartStr = t('top_tabs.shoppingcart');
   const borrowStr = t('top_tabs.borrow');
+  const toBeReturnedStr = t('top_tabs.tobereturned');
   const [tab, setTab] = useState<string>(shoppingCartStr);
 
   useFocusEffect(
@@ -111,6 +113,12 @@ const Library = () => {
     approved: 2,
   };
 
+  const darestituireLoans = loans
+    .filter((loan) => loan.dueDate && !loan.returnedAt)
+    .sort((a, b) => {
+      return a.dueDate!.toDate().getTime() - b.dueDate!.toDate().getTime();
+    });
+
   const tabConfig = {
     [shoppingCartStr]: {
       data: library,
@@ -124,6 +132,12 @@ const Library = () => {
       data: requests.sort((a, b) => order[a.status] - order[b.status]),
       emptyIcon: 'book-arrow-left',
       emptyTitle: t('borrow.title_null'),
+      renderer: ({ item }: { item: Request }) => <RequestCard item={item} />,
+    },
+    [toBeReturnedStr]: {
+      data: darestituireLoans,
+      emptyIcon: 'book-arrow-right',
+      emptyTitle: t('tobereturned.title_null'),
       renderer: ({ item }: { item: Request }) => <RequestCard item={item} />,
     },
   } as any;
@@ -140,6 +154,7 @@ const Library = () => {
             items={[
               { label: shoppingCartStr, value: shoppingCartStr },
               { label: borrowStr, value: borrowStr },
+              { label: toBeReturnedStr, value: toBeReturnedStr },
             ]}
           />
         )}
@@ -150,7 +165,11 @@ const Library = () => {
           <EmptyState
             icon={current.emptyIcon}
             title={current.emptyTitle}
-            subtitle={t('library.title_null_sub')}
+            subtitle={
+              tab === toBeReturnedStr
+                ? t('tobereturned.title_null_sub')
+                : t('library.title_null_sub')
+            }
           />
         )}
         refreshControl={

@@ -53,8 +53,6 @@ const BookCard = memo(({ item, selected, onPress }: BookCardProps) => {
 
   const { membership } = useUserStore();
 
-  console.log(item);
-
   return (
     <View className="gap-4 rounded-2xl bg-card p-4">
       {/* Immagine e Valutazione */}
