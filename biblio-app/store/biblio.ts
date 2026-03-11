@@ -25,6 +25,7 @@ import { fetchUsersByIds } from '~/lib/utils';
 
 export interface Loan {
   id: string;
+  requestId: string | null;
   userId: string;
   bookId: string;
   schoolId: string;
@@ -38,7 +39,7 @@ export interface Request {
   userId: string;
   bookId: string;
   schoolId: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'delivered';
   createdAt: Timestamp | null;
 }
 
@@ -105,6 +106,7 @@ export interface TBiblioAction {
   addBook: (data: Partial<Book>) => Promise<void>;
   updateBook: (bookId: string, data: Partial<Book>) => Promise<void>;
   updateLoan: (loanId: string, data: Partial<Loan>) => Promise<void>;
+  updateRequest: (requestId: string, data: Partial<Request>) => Promise<void>;
   markReturned: (loanId: string) => Promise<void>;
 }
 
@@ -179,13 +181,19 @@ const biblioAction = {
   },
   subscribeLoans: () => {
     const { setLoans, setIsLoading } = useBiblioStore.getState();
-    const { membership } = useUserStore.getState();
+    const { user, membership } = useUserStore.getState();
 
     if (!membership?.schoolId) return () => {};
 
     setIsLoading(true);
 
-    const q = query(collection(db, 'loans'), where('schoolId', '==', membership.schoolId));
+    const constraints: any[] = [where('schoolId', '==', membership.schoolId)];
+
+    if (membership.role === 'user') {
+      constraints.push(where('userId', '==', user.uid));
+    }
+
+    const q = query(collection(db, 'loans'), ...constraints);
 
     const unsub = onSnapshot(
       q,
@@ -374,6 +382,7 @@ const biblioAction = {
         tx.update(requestRef, { status: 'approved' });
         tx.update(bookRef, { available: book.available - 1 });
         tx.set(loanRef, {
+          requestId: requestId,
           userId: request.userId,
           bookId: request.bookId,
           schoolId: request.schoolId,
@@ -463,6 +472,17 @@ const biblioAction = {
       throw err;
     }
   },
+  updateRequest: async (requestId, data) => {
+    const { membership } = useUserStore.getState();
+
+    if (membership.role !== 'staff') throw new Error('Not allowed');
+
+    try {
+      await updateDoc(doc(db, 'requests', requestId), data);
+    } catch (err) {
+      throw err;
+    }
+  },
   markReturned: async (loanId: string) => {
     const { membership } = useUserStore.getState();
     const { loans, setLoans } = useBiblioStore.getState();
@@ -482,17 +502,28 @@ const biblioAction = {
     try {
       const loanRef = doc(db, 'loans', loanId);
       const snap = await getDoc(loanRef);
-      const data = snap.data();
+      const data = snap.data() as Loan;
       if (!data) throw new Error('Loan not found');
 
-      await Promise.all([
+      const updates = [
         updateDoc(loanRef, {
           returnedAt: serverTimestamp(),
         }),
         updateDoc(doc(db, 'books', data.bookId), {
           available: increment(1),
         }),
-      ]);
+      ];
+
+      if (data.requestId) {
+        const requestRef = doc(db, 'requests', data.requestId);
+        updates.push(
+          updateDoc(requestRef, {
+            status: 'completed',
+          })
+        );
+      }
+
+      await Promise.all(updates);
     } catch (err) {
       // nel caso imposto tutto come prima
 

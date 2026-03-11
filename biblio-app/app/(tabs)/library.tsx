@@ -1,7 +1,7 @@
 import { FlatList, View, Alert, RefreshControl } from 'react-native';
 import { Text, BaseCard, ToggleGroup } from '~/components/ui';
 import { EmptyState } from '~/components/partials';
-import { Book, Request, useBiblioStore } from '~/store/biblio';
+import { Book, Loan, Request, useBiblioStore } from '~/store/biblio';
 import { useLibraryStore } from '~/store';
 import { Button } from '~/components/nativewindui/Button';
 import { useColorScheme } from '~/lib/useColorScheme';
@@ -34,6 +34,23 @@ const BookLibraryCard = ({ item, onRemove }: { item: Book; onRemove: () => void 
   );
 };
 
+const LoanUserCard = ({ item }: { item: Loan }) => {
+  const { books } = useBiblioStore();
+
+  const book = books.find((b) => b.id === item.bookId) ?? {
+    title: '',
+    author: '',
+    isbn: '',
+  };
+
+  const toBorrowStr = 'Scadenza prestito:';
+  const toBorrowDate = item.dueDate?.toDate().toLocaleDateString() || '';
+
+  return (
+    <BaseCard title={book.title} subtitle={toBorrowStr} infoLabel={toBorrowDate} isbn={book.isbn} />
+  );
+};
+
 /* ------------------------------------------
    CARD RICHIESTE (usa BaseCard)
 ------------------------------------------- */
@@ -51,8 +68,10 @@ const RequestCard = ({ item }: { item: Request }) => {
 
   const statusMap = {
     approved: { color: colors.success, label: 'Approvato' },
+    delivered: { color: colors.secondary, label: 'Consegnato' },
     rejected: { color: colors.destructive, label: 'Rifiutato' },
     pending: { color: colors.grey2, label: 'In attesa' },
+    completed: { color: colors.primary, label: 'Completato' },
   };
 
   const { color, label } = statusMap[item.status] ?? statusMap.pending;
@@ -111,6 +130,8 @@ const Library = () => {
     pending: 0,
     rejected: 1,
     approved: 2,
+    delivered: 3,
+    completed: 4,
   };
 
   const darestituireLoans = loans
@@ -129,7 +150,9 @@ const Library = () => {
       ),
     },
     [borrowStr]: {
-      data: requests.sort((a, b) => order[a.status] - order[b.status]),
+      data: requests
+        .filter((r) => r.status !== 'completed' && r.status !== 'delivered')
+        .sort((a, b) => order[a.status] - order[b.status]),
       emptyIcon: 'book-arrow-left',
       emptyTitle: t('borrow.title_null'),
       renderer: ({ item }: { item: Request }) => <RequestCard item={item} />,
@@ -138,7 +161,7 @@ const Library = () => {
       data: darestituireLoans,
       emptyIcon: 'book-arrow-right',
       emptyTitle: t('tobereturned.title_null'),
-      renderer: ({ item }: { item: Request }) => <RequestCard item={item} />,
+      renderer: ({ item }: { item: Loan }) => <LoanUserCard item={item} />,
     },
   } as any;
 

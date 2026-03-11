@@ -22,10 +22,7 @@ export default function Index() {
 
     unsubs.push(subscribeBooks());
     unsubs.push(subscribeRequests());
-
-    if (membership.role === 'staff') {
-      unsubs.push(subscribeLoans());
-    }
+    unsubs.push(subscribeLoans());
 
     return () => {
       unsubs.forEach((u) => u && u());

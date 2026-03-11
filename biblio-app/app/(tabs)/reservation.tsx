@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 
 const SetDueDate = ({ loanId }: { loanId: string }) => {
   const updateLoan = useBiblioStore((s) => s.updateLoan);
+  const updateRequest = useBiblioStore((s) => s.updateRequest);
   const loan = useBiblioStore((s) => s.loans.find((l) => l.id === loanId));
   const { colors } = useColorScheme();
 
@@ -60,6 +61,12 @@ const SetDueDate = ({ loanId }: { loanId: string }) => {
     updateLoan(loanId, {
       dueDate: Timestamp.fromDate(date),
     });
+
+    if (loan.requestId) {
+      updateRequest(loan.requestId, {
+        status: 'delivered',
+      });
+    }
 
     setPickerDate(null);
   };

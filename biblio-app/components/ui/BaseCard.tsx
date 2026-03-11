@@ -10,16 +10,18 @@ const BaseCard = ({
   isbn,
   statusColor,
   statusLabel,
+  infoLabel,
   actionLabel,
   onPress,
 }: {
   title: string;
   subtitle: string;
   isbn: string;
-  statusColor: string;
-  statusLabel: string;
-  actionLabel: string;
-  onPress: () => void;
+  statusColor?: string;
+  statusLabel?: string;
+  infoLabel?: string;
+  actionLabel?: string;
+  onPress?: () => void;
 }) => {
   return (
     <View className="flex-row justify-between gap-8 rounded-lg bg-card p-4 shadow-md">
@@ -31,24 +33,29 @@ const BaseCard = ({
           <Text variant="label" color="muted">
             {truncateText(subtitle, 20)}
           </Text>
+          {infoLabel && <Text>{infoLabel}</Text>}
 
-          <View className="flex-row items-center gap-2">
-            <Icon size="label" name="circle" color={statusColor} />
-            <Text
-              weight="light"
-              variant="label"
-              className="flex-shrink uppercase"
-              style={{ includeFontPadding: false }}>
-              {statusLabel}
-            </Text>
-          </View>
+          {statusLabel && (
+            <View className="flex-row items-center gap-2">
+              <Icon size="label" name="circle" color={statusColor} />
+              <Text
+                weight="light"
+                variant="label"
+                className="flex-shrink uppercase"
+                style={{ includeFontPadding: false }}>
+                {statusLabel}
+              </Text>
+            </View>
+          )}
         </View>
 
-        <Pressable className="flex-row items-center gap-2" onPress={onPress}>
-          <Text variant="label" weight="light" className="text-destructive underline">
-            {actionLabel}
-          </Text>
-        </Pressable>
+        {actionLabel && (
+          <Pressable className="flex-row items-center gap-2" onPress={onPress}>
+            <Text variant="label" weight="light" className="text-destructive underline">
+              {actionLabel}
+            </Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );
