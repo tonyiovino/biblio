@@ -33,31 +33,31 @@ const HeaderRight = () => {
   );
 };
 
-const HeaderBin = () => {
-  const { library, clearLibrary } = useLibraryStore();
-  const { t } = useTranslation();
+// const HeaderBin = () => {
+//   const { library, clearLibrary } = useLibraryStore();
+//   const { t } = useTranslation();
 
-  const isEmpty = library.length <= 0;
+//   const isEmpty = library.length <= 0;
 
-  return (
-    <Button
-      variant="plain"
-      className="mr-6"
-      size={'icon'}
-      disabled={isEmpty}
-      onPress={() =>
-        Alert.alert('Attenzione!', 'Vuoi eliminare tutta la libreria?', [
-          { text: t('index.cancel'), style: 'cancel' },
-          { text: 'Sì', style: 'destructive', onPress: clearLibrary },
-        ])
-      }>
-      <Icon
-        type="MaterialCommunityIcons"
-        name={isEmpty ? 'delete-empty-outline' : 'delete-outline'}
-      />
-    </Button>
-  );
-};
+//   return (
+//     <Button
+//       variant="plain"
+//       className="mr-6"
+//       size={'icon'}
+//       disabled={isEmpty}
+//       onPress={() =>
+//         Alert.alert('Attenzione!', 'Vuoi eliminare tutta la libreria?', [
+//           { text: t('index.cancel'), style: 'cancel' },
+//           { text: 'Sì', style: 'destructive', onPress: clearLibrary },
+//         ])
+//       }>
+//       <Icon
+//         type="MaterialCommunityIcons"
+//         name={isEmpty ? 'delete-empty-outline' : 'delete-outline'}
+//       />
+//     </Button>
+//   );
+// };
 
 export default function TabLayout() {
   const { t } = useTranslation();
@@ -90,7 +90,7 @@ export default function TabLayout() {
         <TabBarIcon type="MaterialCommunityIcons" name="library-shelves" active={focused} />
       </View>
     ),
-    headerRight: HeaderBin,
+    // headerRight: HeaderBin,
   } as TabsProps;
 
   const ADD_BOOK = {
