@@ -2,9 +2,9 @@ import { create } from 'zustand';
 import {
   addDoc,
   collection,
-  deleteDoc,
   doc,
   getDoc,
+  getDocs,
   increment,
   onSnapshot,
   query,
@@ -13,6 +13,7 @@ import {
   Timestamp,
   Unsubscribe,
   updateDoc,
+  writeBatch,
   where,
 } from 'firebase/firestore';
 import { db } from '~/lib/firebase';
@@ -329,7 +330,7 @@ const biblioAction = {
   },
   cancelRequest: async (requestId) => {
     const { membership } = useUserStore.getState();
-    const { requests, setRequests, setIsLoading } = useBiblioStore.getState();
+    const { requests, loans, setRequests, setLoans, setIsLoading } = useBiblioStore.getState();
 
     setIsLoading(true);
     if (!membership.schoolId) {
@@ -337,15 +338,31 @@ const biblioAction = {
       throw new Error('No school selected');
     }
 
-    const backup = requests.map((r) => ({ ...r }));
+    const requestsBackup = requests.map((r) => ({ ...r }));
+    const loansBackup = loans.map((l) => ({ ...l }));
 
     // optimistic
     setRequests(requests.filter((r) => r.id !== requestId));
+    setLoans(loans.map((l) => (l.requestId === requestId ? { ...l, requestId: null } : l)));
 
     try {
-      await deleteDoc(doc(db, 'requests', requestId));
+      const q = query(collection(db, 'loans'), where('requestId', '==', requestId));
+
+      const snapshot = await getDocs(q);
+
+      const batch = writeBatch(db);
+      batch.delete(doc(db, 'requests', requestId));
+
+      if (!snapshot.empty) {
+        snapshot.docs.forEach((loanDoc) => {
+          batch.update(loanDoc.ref, { requestId: null });
+        });
+      }
+
+      await batch.commit();
     } catch {
-      setRequests(backup);
+      setRequests(requestsBackup);
+      setLoans(loansBackup);
       console.log('Errore durante la cancellazione');
     } finally {
       setIsLoading(false);

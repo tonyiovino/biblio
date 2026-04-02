@@ -132,6 +132,12 @@ const LoanCard = ({ item }: { item: Loan }) => {
                 {`Restituito il ${formatDate(item.returnedAt.toDate())}`}
               </Text>
             )}
+
+            {!item.requestId && (
+              <Text variant={'label'} className="text-yellow-600">
+                {'Il prestito è stato annullato'}
+              </Text>
+            )}
           </View>
         </View>
       </View>
