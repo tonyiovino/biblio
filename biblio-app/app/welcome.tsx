@@ -16,7 +16,7 @@ export default function Welcome() {
         contentContainerClassName="gap-12"
         contentContainerStyle={{ paddingBottom: insets.bottom }}>
         <View className="flex-grow justify-start gap-8">
-          <Text color="black">Test Login</Text>
+          <Text>Test Login</Text>
         </View>
       </KeyboardAwareScrollView>
     </SafeAreaView>
